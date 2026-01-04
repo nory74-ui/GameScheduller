@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バスケ対戦表メーカー (カラー設定対応版)</title>
+    <title>バスケ対戦表メーカー (審判完全平均化版)</title>
     <style>
         :root {
-            /* Default Colors */
+            /* Screen Colors */
             --primary: #f97316; /* Orange 500 */
             --primary-dark: #c2410c; /* Orange 700 */
-            --secondary: #1e293b; /* Slate 800 (Table Headers) */
+            --secondary: #1e293b; /* Slate 800 */
             --accent: #facc15; /* Yellow 400 */
-            
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --text-main: #334155;
@@ -34,10 +33,8 @@
             color: white;
             padding: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            /* Gradient is set via JS to match color */
-            background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent 100%);
+            background-image: linear-gradient(45deg, #f97316 25%, #ea580c 25%, #ea580c 50%, #f97316 50%, #f97316 75%, #ea580c 75%, #ea580c 100%);
             background-size: 20px 20px;
-            transition: background-color 0.3s;
         }
         .container {
             max-width: 1200px;
@@ -90,7 +87,7 @@
             border-bottom: 2px solid #f1f5f9;
             padding-bottom: 8px;
         }
-        .icon-primary { color: var(--primary); transition: color 0.3s; }
+        .icon-orange { color: var(--primary); }
 
         label {
             display: block;
@@ -109,15 +106,10 @@
             font-size: 0.9rem;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        input[type="color"] {
-            padding: 2px;
-            height: 40px;
-            cursor: pointer;
-        }
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0,0,0, 0.1); /* Neutral focus ring */
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
         }
         .row { display: flex; gap: 12px; margin-bottom: 12px; }
         .col { flex: 1; }
@@ -139,10 +131,9 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0, 0.15);
-            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3);
         }
-        .btn-primary:hover { filter: brightness(90%); transform: translateY(-1px); }
+        .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-1px); }
         .btn-outline {
             background: transparent;
             border: 2px dashed #cbd5e1;
@@ -173,9 +164,6 @@
             backdrop-filter: blur(4px);
         }
         .btn-print:hover { background: rgba(255,255,255,0.3); }
-        .btn-reset {
-            font-size: 0.75rem; color: #64748b; text-decoration: underline; background: none; padding: 0; margin-left: auto;
-        }
 
         .team-item { display: flex; gap: 8px; margin-bottom: 8px; }
         .team-num {
@@ -233,9 +221,9 @@
             text-align: center;
             font-size: 0.85rem;
         }
-        .part-teams { font-weight: bold; background: linear-gradient(to bottom, #fff, #f8fafc); color: #334155; justify-content: center; gap: 8px; }
+        .part-teams { font-weight: bold; background: linear-gradient(to bottom, #fff, #fff7ed); color: #334155; justify-content: center; gap: 8px; }
         .part-ref { border-left: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-size: 0.75rem; flex-direction: column; line-height: 1.1; }
-        .part-both { border-left: 1px solid #cbd5e1; background: #f1f5f9; color: var(--secondary); font-weight: bold; font-size: 0.75rem; flex-direction: column; line-height: 1.1; }
+        .part-both { border-left: 1px solid #cbd5e1; background: #eff6ff; color: #1e40af; font-weight: bold; font-size: 0.75rem; flex-direction: column; line-height: 1.1; }
         
         .vs-badge { font-size: 0.7rem; color: #fff; background: #cbd5e1; border-radius: 12px; padding: 1px 6px; font-weight: bold; margin: 0 4px; }
 
@@ -247,9 +235,9 @@
         .matrix-table th.matrix-team-col { position: sticky; left: 0; background: #f1f5f9; z-index: 1; text-align: left; min-width: 100px; border-right: 2px solid #cbd5e1; }
         .matrix-table td.matrix-team-col { position: sticky; left: 0; background: #fff; z-index: 1; text-align: left; font-weight: bold; color: #1e293b; border-right: 2px solid #cbd5e1; }
         
-        .symbol-game { display: inline-block; background: #fff7ed; color: var(--primary); font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
-        .symbol-ref { display: inline-block; background: #eff6ff; color: #64748b; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
-        .symbol-both { display: inline-block; background: #f3e8ff; color: var(--secondary); font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .symbol-game { display: inline-block; background: #fff7ed; color: #ea580c; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #fed7aa; }
+        .symbol-ref { display: inline-block; background: #eff6ff; color: #2563eb; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #bfdbfe; }
+        .symbol-both { display: inline-block; background: #f3e8ff; color: #9333ea; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e9d5ff; }
         .matrix-legend { display: flex; gap: 12px; margin-top: 8px; font-size: 0.8rem; color: #64748b; justify-content: flex-end; }
         .legend-item { display: flex; align-items: center; gap: 6px; }
 
@@ -261,7 +249,7 @@
         .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
         .icon-sm { width: 14px; height: 14px; }
 
-        /* --- PRINT STYLES (Dynamic Variables) --- */
+        /* --- PRINT STYLES (Colorful & Stylish) --- */
         @media print {
             @page { margin: 10mm; size: portrait; }
             
@@ -281,7 +269,7 @@
             /* --- Stylish Header --- */
             .preview-header { 
                 margin-bottom: 8px; 
-                border-bottom: 4px solid var(--primary); /* Uses Dynamic Color */
+                border-bottom: 4px solid #ea580c; /* Orange Accent */
                 padding-bottom: 6px;
                 display: flex; 
                 justify-content: space-between; 
@@ -294,7 +282,7 @@
                 font-weight: 900;
                 text-transform: uppercase;
                 letter-spacing: -0.5px;
-                color: var(--primary); /* Uses Dynamic Color */
+                color: #ea580c; /* Title Orange */
                 font-style: italic;
                 text-shadow: 1px 1px 0 #ddd;
             }
@@ -315,16 +303,16 @@
                 width: 100%; 
                 margin-bottom: 8px; 
                 border-collapse: collapse; 
-                border: 2px solid var(--secondary); /* Uses Dynamic Secondary */
+                border: 2px solid #334155; /* Dark Border */
             }
             
             /* Header Row */
             .schedule-table th, .matrix-table th { 
-                background-color: var(--secondary) !important; /* Uses Dynamic Secondary */
+                background-color: #1e293b !important; /* Navy Header */
                 color: #fff !important; 
                 font-size: 0.8rem; 
                 font-weight: 700;
-                border: 1px solid var(--secondary) !important;
+                border: 1px solid #334155 !important;
                 padding: 0 !important; 
                 text-transform: uppercase;
             }
@@ -332,6 +320,29 @@
             .schedule-table td, .matrix-table td {
                 border: 1px solid #94a3b8 !important; 
                 padding: 0 !important;
+            }
+
+            /* --- Header Grid Structure --- */
+            .header-inner {
+                display: grid;
+                grid-template-columns: 1fr 65px 65px; 
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+            .header-part {
+                padding: 4px 2px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                line-height: 1.1;
+            }
+            .header-border-left { 
+                border-left: 1px solid #64748b !important; 
+            }
+            .header-title-box {
+                justify-content: center; 
             }
 
             /* Match Cell */
@@ -367,7 +378,9 @@
                 grid-template-columns: 1fr auto 1fr !important;
                 padding: 0 4px !important;
             }
-            
+            .part-teams > span:nth-child(1) { text-align: right; overflow: hidden; text-overflow: ellipsis; }
+            .part-teams > span:nth-child(3) { text-align: left; overflow: hidden; text-overflow: ellipsis; }
+
             /* Dividers */
             .part-ref { border-left: 1px solid #94a3b8 !important; background: #fff !important; }
             .part-both { border-left: 1px solid #94a3b8 !important; background: #fff !important; }
@@ -385,7 +398,7 @@
                 font-size: 0.6rem;
                 font-weight: 900;
                 color: #fff !important;
-                background: var(--primary) !important; /* Dynamic */
+                background: #f97316 !important; 
                 border-radius: 50%;
                 width: 16px; height: 16px;
                 display: inline-flex; 
@@ -397,17 +410,17 @@
             /* --- Matrix Colorful Symbols --- */
             .matrix-container { margin-top: 5px !important; border: none !important; }
             
-            .symbol-game { background: var(--primary) !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
-            .symbol-ref { background: #cbd5e1 !important; color: #334155 !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
-            .symbol-both { background: var(--secondary) !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
+            .symbol-game { background: #f97316 !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
+            .symbol-ref { background: #3b82f6 !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
+            .symbol-both { background: #a855f7 !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
             
             h4 { 
                 margin: 8px 0 4px 0 !important; 
                 font-size: 0.95rem !important; 
                 font-weight: 900; 
                 text-transform: uppercase;
-                color: var(--secondary) !important;
-                border-left: 6px solid var(--primary); 
+                color: #1e293b !important;
+                border-left: 6px solid #f97316; 
                 padding-left: 8px;
             }
             .matrix-legend { margin: 2px 0; font-size: 0.7rem; }
@@ -444,32 +457,9 @@
 <div class="container main-content">
     <!-- Settings Panel -->
     <div class="settings-panel">
-        
-        <!-- Design Settings -->
         <div class="card">
             <div class="card-header">
-                <svg class="icon-primary" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-                デザイン設定
-                <button class="btn-reset" onclick="resetTheme()">元に戻す</button>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label>メインカラー</label>
-                    <input type="color" id="colorMain" value="#f97316" oninput="updateTheme()">
-                </div>
-                <div class="col">
-                    <label>ヘッダーカラー</label>
-                    <input type="color" id="colorSub" value="#1e293b" oninput="updateTheme()">
-                </div>
-            </div>
-            <div style="font-size:0.7rem; color:#64748b; margin-top:4px;">
-                ※印刷時のタイトルや表のヘッダー色に反映されます
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <svg class="icon-primary" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+                <svg class="icon-orange" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
                 大会・会場情報
             </div>
             <div class="row">
@@ -489,7 +479,7 @@
 
         <div class="card">
             <div class="card-header">
-                <svg class="icon-primary" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <svg class="icon-orange" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                 参加チーム (<span id="teamCount">0</span>)
             </div>
             <div id="teamsListContainer"></div>
@@ -500,7 +490,7 @@
 
         <div class="card">
             <div class="card-header">
-                <svg class="icon-primary" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <svg class="icon-orange" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 試合設定
             </div>
             <label>対戦方式</label>
@@ -606,30 +596,6 @@
     };
 
     els.eventDate.valueAsDate = new Date();
-
-    // Theme Logic
-    function updateTheme() {
-        const primary = document.getElementById('colorMain').value;
-        const secondary = document.getElementById('colorSub').value;
-        const root = document.documentElement;
-
-        root.style.setProperty('--primary', primary);
-        root.style.setProperty('--secondary', secondary);
-
-        // Update darker primary shade for hover manually (approximate darkening)
-        root.style.setProperty('--primary-dark', adjustColor(primary, -30));
-    }
-
-    function resetTheme() {
-        document.getElementById('colorMain').value = '#f97316';
-        document.getElementById('colorSub').value = '#1e293b';
-        updateTheme();
-    }
-
-    function adjustColor(color, amount) {
-        // Simple function to darken hex color
-        return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
-    }
 
     function resolveTeamName(id) {
         if (id === null || id === 0) return "ー";
@@ -749,14 +715,17 @@
             const result = tryBuildSchedule(shuffledPool, courts, teams, startTimeStr, gameDuration, interval, slotMinutes, state.timeMode);
             
             // 評価比較
+            // 優先順位 1: 連戦数 (少ない方が良い)
             if (result.metrics.doubleHeaders < bestMetrics.doubleHeaders) {
                 bestSchedule = result.schedule;
                 bestMetrics = result.metrics;
             } else if (result.metrics.doubleHeaders === bestMetrics.doubleHeaders) {
+                // 優先順位 3: 少なくとも1回は2試合空きがあるか (「ない」チーム数が少ない方が良い)
                 if (result.metrics.teamsWithoutLongBreak < bestMetrics.teamsWithoutLongBreak) {
                     bestSchedule = result.schedule;
                     bestMetrics = result.metrics;
                 } else if (result.metrics.teamsWithoutLongBreak === bestMetrics.teamsWithoutLongBreak) {
+                    // 優先順位の補足: 試合間隔のばらつきが小さい方が公平
                     if (result.metrics.intervalVariance < bestMetrics.intervalVariance) {
                         bestSchedule = result.schedule;
                         bestMetrics = result.metrics;
@@ -792,8 +761,11 @@
         let currentTime = new Date(`2000-01-01T${startTimeStr}:00`);
         
         let doubleHeadersCount = 0;
+        
+        // 各チームの試合スロット履歴
         const playedSlots = {}; 
         teams.forEach(t => playedSlots[t.id] = []);
+
         let currentSlotIndex = 0;
 
         while (poolCopy.length > 0) {
@@ -803,6 +775,10 @@
 
             for (let c = 0; c < courts; c++) {
                 if (poolCopy.length === 0) break;
+
+                // 候補を探す
+                // 優先度1: この時間枠で試合していない & 直前も試合していない (連戦なし)
+                // 優先度2: この時間枠で試合していない (連戦あり)
                 
                 let bestIdx = -1;
                 
@@ -814,27 +790,40 @@
                         const awayLast = playedSlots[m.away.id].length > 0 ? playedSlots[m.away.id][playedSlots[m.away.id].length-1] : -10;
                         
                         if (homeLast !== currentSlotIndex - 1 && awayLast !== currentSlotIndex - 1) {
-                            bestIdx = i; break; 
+                            bestIdx = i;
+                            break; 
                         }
                     }
                 }
 
-                // 2. なければ連戦
+                // 2. なければ、やむを得ず連戦になる候補を探す
                 if (bestIdx === -1) {
                     for (let i = 0; i < poolCopy.length; i++) {
                         const m = poolCopy[i];
                         if (!slotBusyTeams.has(m.home.id) && !slotBusyTeams.has(m.away.id)) {
-                            bestIdx = i; doubleHeadersCount++; break;
+                            bestIdx = i;
+                            doubleHeadersCount++; 
+                            break;
                         }
                     }
                 }
 
                 if (bestIdx !== -1) {
                     const match = poolCopy.splice(bestIdx, 1)[0];
-                    slotMatches.push({ ...match, court: c + 1, slotIndex: currentSlotIndex, homeId: match.home.id, awayId: match.away.id });
-                    slotBusyTeams.add(match.home.id); slotBusyTeams.add(match.away.id);
+                    slotMatches.push({
+                        ...match,
+                        court: c + 1,
+                        slotIndex: currentSlotIndex,
+                        homeId: match.home.id,
+                        awayId: match.away.id
+                    });
+                    slotBusyTeams.add(match.home.id);
+                    slotBusyTeams.add(match.away.id);
                 }
             }
+
+            // コート調整 (1試合ならBコートへ移動...のような美的処理は一旦省略し、詰めて配置)
+            // もし美観重視ならここで slotMatches[0].court = 2 などを検討
 
             slotMatches.forEach(m => {
                 playedSlots[m.homeId].push(currentSlotIndex);
@@ -847,83 +836,174 @@
             currentSlotIndex++;
         }
 
+        // --- メトリクス計算 ---
+        
+        // 1. 「2試合以上の空き」があるかチェック
+        // 差分が3以上 (例: スロット1で試合、次はスロット4以降) なら「2試合空き」達成
         let teamsWithoutLongBreak = 0;
+        let intervalSum = 0;
+        let intervalCount = 0;
         let intervals = [];
+
         teams.forEach(t => {
             const slots = playedSlots[t.id];
             let hasLongBreak = false;
-            if (slots.length < 2) { hasLongBreak = true; } 
-            else {
+            
+            if (slots.length < 2) {
+                // 試合数が少なすぎて休憩判定できない場合はOK扱いとするかNGとするか。
+                // ここでは「休憩が必要なほど試合していない」のでOK扱い(=Breakあり)とする
+                hasLongBreak = true; 
+            } else {
                 for (let i = 0; i < slots.length - 1; i++) {
                     const diff = slots[i+1] - slots[i];
                     intervals.push(diff);
-                    if (diff >= 3) { hasLongBreak = true; }
+                    if (diff >= 3) { // 差が3なら、間に2つスロットがある
+                        hasLongBreak = true;
+                    }
                 }
             }
             if (!hasLongBreak) teamsWithoutLongBreak++;
         });
 
+        // 分散計算 (公平性)
         const mean = intervals.length > 0 ? intervals.reduce((a,b)=>a+b,0)/intervals.length : 0;
         const variance = intervals.length > 0 ? intervals.reduce((a,b)=>a + Math.pow(b-mean, 2), 0) / intervals.length : 0;
 
-        return { schedule, metrics: { doubleHeaders: doubleHeadersCount, teamsWithoutLongBreak: teamsWithoutLongBreak, intervalVariance: variance } };
+        return { 
+            schedule, 
+            metrics: {
+                doubleHeaders: doubleHeadersCount,
+                teamsWithoutLongBreak: teamsWithoutLongBreak,
+                intervalVariance: variance
+            }
+        };
     }
 
-    // --- 内部関数: 審判割り当て ---
+    // --- 内部関数: 審判割り当て (優先順位 2: 完全平均化 & 4: 移動考慮) ---
     function assignOfficialsToSchedule(schedule, teams, autoAssign) {
         if (!autoAssign) {
             return schedule.map(m => ({ ...m, refIds: [null, null], toId: null }));
         }
 
-        const refCounts = {}; const toCounts = {};
-        teams.forEach(t => { refCounts[t.id] = 0; toCounts[t.id] = 0; });
+        const dutyCounts = {}; // Ref + TO count (参考用)
+        const refCounts = {};  // 審判回数 (最重要)
+        const toCounts = {};   // TO回数
+        
+        teams.forEach(t => { 
+            dutyCounts[t.id] = 0; 
+            refCounts[t.id] = 0; 
+            toCounts[t.id] = 0; 
+        });
 
+        // スケジュールを時間枠ごとにグループ化
         const slotsMap = {};
-        schedule.forEach(m => { if (!slotsMap[m.slotIndex]) slotsMap[m.slotIndex] = []; slotsMap[m.slotIndex].push(m); });
+        schedule.forEach(m => {
+            if (!slotsMap[m.slotIndex]) slotsMap[m.slotIndex] = [];
+            slotsMap[m.slotIndex].push(m);
+        });
+
         const sortedSlots = Object.keys(slotsMap).sort((a,b) => parseInt(a) - parseInt(b));
         const enrichedMatches = [];
 
         sortedSlots.forEach(slotKey => {
             const slotIndex = parseInt(slotKey);
             const currentMatches = slotsMap[slotKey];
+            
+            // この時間帯に試合があるチーム (割り当て不可)
             const playingTeamIds = new Set();
             currentMatches.forEach(m => { playingTeamIds.add(m.homeId); playingTeamIds.add(m.awayId); });
+
+            // この時間帯ですでに審判に割り当てられたチーム
             const assignedInSlot = new Set();
 
+            // 試合ごとに割り当て
             currentMatches.forEach(match => {
-                let candidates = teams.filter(t => !playingTeamIds.has(t.id) && !assignedInSlot.has(t.id));
+                // 候補チーム抽出
+                let candidates = teams.filter(t => 
+                    !playingTeamIds.has(t.id) && !assignedInSlot.has(t.id)
+                );
 
                 if (candidates.length < 1) {
-                    enrichedMatches.push({ ...match, refIds: [-1, -1], toId: -1 }); return;
+                    enrichedMatches.push({ ...match, refIds: [-1, -1], toId: -1 });
+                    return;
                 }
+
+                // スコアリングとソート
+                // 優先順位:
+                // 1. 審判回数 (少ない方が絶対)
+                // 2. 移動負担 (同じコートでの接続が良い方が良い)
+                // 3. TO回数 (少ない方が良い)
 
                 const scoredCandidates = candidates.map(team => {
                     let moveScore = 0;
+
+                    // 移動負担の評価
                     const prevSlotMatches = slotsMap[slotIndex - 1] || [];
                     const nextSlotMatches = slotsMap[slotIndex + 1] || [];
+
+                    // 直前・直後の状況チェック
                     const playedPrevHere = prevSlotMatches.some(m => m.court === match.court && (m.homeId === team.id || m.awayId === team.id));
                     const willPlayNextHere = nextSlotMatches.some(m => m.court === match.court && (m.homeId === team.id || m.awayId === team.id));
-                    if (playedPrevHere) moveScore += 1; if (willPlayNextHere) moveScore += 1;
+                    
+                    // 移動なし（同じコートで連続）なら加点
+                    if (playedPrevHere) moveScore += 1;
+                    if (willPlayNextHere) moveScore += 1;
+                    
+                    // 違うコートなら微減点（移動の手間）
+                    // ここは「平均化」を阻害しない範囲で、同回数の時の決定打にする
+                    
                     return { team, moveScore };
                 });
 
                 scoredCandidates.sort((a, b) => {
+                    // 1. 審判回数 (昇順) - 絶対優先
                     const refDiff = refCounts[a.team.id] - refCounts[b.team.id];
                     if (refDiff !== 0) return refDiff;
+
+                    // 2. 移動スコア (降順) - 回数が同じなら移動が楽な方を選ぶ
                     const moveDiff = b.moveScore - a.moveScore;
                     if (moveDiff !== 0) return moveDiff;
+
+                    // 3. TO回数 (昇順) - それも同じならTOが少ない方
                     return toCounts[a.team.id] - toCounts[b.team.id];
                 });
 
-                let assignedTeams = (scoredCandidates.length >= 2) ? [scoredCandidates[0].team, scoredCandidates[1].team] : [scoredCandidates[0].team];
-                assignedTeams.forEach(t => { assignedInSlot.add(t.id); refCounts[t.id]++; });
+                // 上位2チームを選出
+                let assignedTeams = [];
+                if (scoredCandidates.length >= 2) {
+                    assignedTeams = [scoredCandidates[0].team, scoredCandidates[1].team];
+                } else {
+                    assignedTeams = [scoredCandidates[0].team];
+                }
 
-                let t1 = assignedTeams[0]; let t2 = assignedTeams[1]; let toId = null;
+                // 記録更新
+                assignedTeams.forEach(t => {
+                    assignedInSlot.add(t.id);
+                    refCounts[t.id]++;
+                    dutyCounts[t.id]++;
+                });
+
+                // TO割り当て (2チームのうちTO回数が少ない方)
+                let t1 = assignedTeams[0];
+                let t2 = assignedTeams[1];
+                let toId = null;
+
                 if (t2) {
-                    if (toCounts[t1.id] <= toCounts[t2.id]) { toId = t1.id; toCounts[t1.id]++; } else { toId = t2.id; toCounts[t2.id]++; }
+                    if (toCounts[t1.id] <= toCounts[t2.id]) {
+                        toId = t1.id;
+                        toCounts[t1.id]++;
+                        dutyCounts[t1.id]++;
+                    } else {
+                        toId = t2.id;
+                        toCounts[t2.id]++;
+                        dutyCounts[t2.id]++;
+                    }
                     enrichedMatches.push({ ...match, refIds: [t1.id, t2.id], toId: toId });
                 } else {
-                    toId = t1.id; toCounts[t1.id]++;
+                    // 1チームのみ
+                    toId = t1.id;
+                    toCounts[t1.id]++;
+                    dutyCounts[t1.id]++;
                     enrichedMatches.push({ ...match, refIds: [t1.id, -1], toId: toId });
                 }
             });
@@ -950,12 +1030,8 @@
         document.getElementById('printOpenTime').textContent = '⏰ ' + document.getElementById('eventOpenTime').value + " 開場";
 
         const notes = document.getElementById('eventNotes').value;
-        if(notes) {
-             document.getElementById('printNotesContainer').classList.remove('hidden');
-             document.getElementById('printNotesContent').textContent = notes;
-        } else {
-             document.getElementById('printNotesContainer').classList.add('hidden');
-        }
+        document.getElementById('printNotesContainer').classList.remove('hidden');
+        document.getElementById('printNotesContent').textContent = notes;
 
         const timeSlots = {};
         state.schedule.forEach(match => {
@@ -999,28 +1075,52 @@
                     const r2Name = resolveTeamName(match.refIds[1]);
                     const toName = resolveTeamName(match.toId);
 
-                    let refOnly = ""; let refTo = "";
+                    let refOnly = "";
+                    let refTo = "";
                     
                     if (match.refIds.length >= 2) {
-                        const r1Id = match.refIds[0]; const r2Id = match.refIds[1];
-                        if (r1Id !== null && r1Id !== -1 && r1Id === match.toId) { refTo = r1Name; refOnly = r2Name; } 
-                        else if (r2Id !== null && r2Id !== -1 && r2Id === match.toId) { refTo = r2Name; refOnly = r1Name; } 
-                        else {
+                        const r1Id = match.refIds[0];
+                        const r2Id = match.refIds[1];
+                        
+                        // どちらがTO兼任か判定して表示
+                        if (r1Id !== null && r1Id !== -1 && r1Id === match.toId) {
+                            refTo = r1Name; refOnly = r2Name;
+                        } else if (r2Id !== null && r2Id !== -1 && r2Id === match.toId) {
+                            refTo = r2Name; refOnly = r1Name;
+                        } else {
+                            // 通常ここには来ないが念のため
                             refOnly = [r1Name, r2Name].filter(n => n !== "ー").join(",");
                             refTo = toName + (match.toId !== null && match.toId !== -1 ? "(TOのみ)" : "");
                         }
-                        if(match.toId === -1) refTo = "要調整"; if(match.toId === null) refTo = "ー";
+                        
+                        if(match.toId === -1) refTo = "要調整";
+                        if(match.toId === null) refTo = "ー";
 
-                    } else if (match.refIds.length === 2 && match.refIds[1] === -1) { refTo = r1Name; refOnly = "ー"; } 
-                    else { refOnly = "ー"; refTo = "ー"; }
+                    } else if (match.refIds.length === 2 && match.refIds[1] === -1) {
+                         // 1チームしかいない場合
+                         refTo = r1Name;
+                         refOnly = "ー";
+                    } else {
+                        refOnly = "ー"; refTo = "ー";
+                    }
 
-                    tr.innerHTML += `<td>
-                        <div class="match-cell">
-                            <div class="cell-part part-teams"><span>${homeName}</span><span class="vs-badge">vs</span><span>${awayName}</span></div>
-                            <div class="cell-part part-ref"><span>${refOnly}</span></div>
-                            <div class="cell-part part-both"><span>${refTo}</span></div>
-                        </div>
-                    </td>`;
+                    tr.innerHTML += `
+                        <td>
+                            <div class="match-cell">
+                                <div class="cell-part part-teams">
+                                    <span>${homeName}</span>
+                                    <span class="vs-badge">vs</span>
+                                    <span>${awayName}</span>
+                                </div>
+                                <div class="cell-part part-ref">
+                                    <span>${refOnly}</span>
+                                </div>
+                                <div class="cell-part part-both">
+                                    <span>${refTo}</span>
+                                </div>
+                            </div>
+                        </td>
+                    `;
                 } else {
                     tr.innerHTML += `<td style="background:#f8fafc;"></td>`;
                 }
@@ -1042,8 +1142,10 @@
                 const slotMatches = timeSlots[time] || [];
                 for (const m of slotMatches) {
                     if (m.homeId === team.id || m.awayId === team.id) { symbol = "G"; className = "symbol-game"; break; }
+                    
                     let isRef = m.refIds && m.refIds.includes(team.id); 
                     let isTo = m.toId === team.id;
+                    
                     if (isRef && isTo) { symbol = "★"; className = "symbol-both"; break; }
                     else if (isRef) { symbol = "R"; className = "symbol-ref"; }
                     else if (isTo) { symbol = "TO"; className = "symbol-ref"; }
@@ -1085,4 +1187,3 @@
 </script>
 </body>
 </html>
-
