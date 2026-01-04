@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バスケ対戦表メーカー (審判完全平均化版)</title>
+    <title>バスケ対戦表メーカー (1行収縮対応版)</title>
     <style>
         :root {
-            /* Screen Colors */
+            /* Default Colors */
             --primary: #f97316; /* Orange 500 */
             --primary-dark: #c2410c; /* Orange 700 */
-            --secondary: #1e293b; /* Slate 800 */
+            --secondary: #1e293b; /* Slate 800 (Table Headers) */
             --accent: #facc15; /* Yellow 400 */
+            
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --text-main: #334155;
@@ -33,8 +34,9 @@
             color: white;
             padding: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            background-image: linear-gradient(45deg, #f97316 25%, #ea580c 25%, #ea580c 50%, #f97316 50%, #f97316 75%, #ea580c 75%, #ea580c 100%);
+            background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent 100%);
             background-size: 20px 20px;
+            transition: background-color 0.3s;
         }
         .container {
             max-width: 1200px;
@@ -87,7 +89,7 @@
             border-bottom: 2px solid #f1f5f9;
             padding-bottom: 8px;
         }
-        .icon-orange { color: var(--primary); }
+        .icon-primary { color: var(--primary); transition: color 0.3s; }
 
         label {
             display: block;
@@ -106,10 +108,15 @@
             font-size: 0.9rem;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
+        input[type="color"] {
+            padding: 2px;
+            height: 40px;
+            cursor: pointer;
+        }
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+            box-shadow: 0 0 0 3px rgba(0,0,0, 0.1);
         }
         .row { display: flex; gap: 12px; margin-bottom: 12px; }
         .col { flex: 1; }
@@ -131,9 +138,10 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0, 0.15);
+            transition: background-color 0.3s, transform 0.1s;
         }
-        .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-1px); }
+        .btn-primary:hover { filter: brightness(90%); transform: translateY(-1px); }
         .btn-outline {
             background: transparent;
             border: 2px dashed #cbd5e1;
@@ -164,6 +172,9 @@
             backdrop-filter: blur(4px);
         }
         .btn-print:hover { background: rgba(255,255,255,0.3); }
+        .btn-reset {
+            font-size: 0.75rem; color: #64748b; text-decoration: underline; background: none; padding: 0; margin-left: auto;
+        }
 
         .team-item { display: flex; gap: 8px; margin-bottom: 8px; }
         .team-num {
@@ -221,9 +232,9 @@
             text-align: center;
             font-size: 0.85rem;
         }
-        .part-teams { font-weight: bold; background: linear-gradient(to bottom, #fff, #fff7ed); color: #334155; justify-content: center; gap: 8px; }
+        .part-teams { font-weight: bold; background: linear-gradient(to bottom, #fff, #f8fafc); color: #334155; justify-content: center; gap: 8px; }
         .part-ref { border-left: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-size: 0.75rem; flex-direction: column; line-height: 1.1; }
-        .part-both { border-left: 1px solid #cbd5e1; background: #eff6ff; color: #1e40af; font-weight: bold; font-size: 0.75rem; flex-direction: column; line-height: 1.1; }
+        .part-both { border-left: 1px solid #cbd5e1; background: #f1f5f9; color: var(--secondary); font-weight: bold; font-size: 0.75rem; flex-direction: column; line-height: 1.1; }
         
         .vs-badge { font-size: 0.7rem; color: #fff; background: #cbd5e1; border-radius: 12px; padding: 1px 6px; font-weight: bold; margin: 0 4px; }
 
@@ -235,28 +246,20 @@
         .matrix-table th.matrix-team-col { position: sticky; left: 0; background: #f1f5f9; z-index: 1; text-align: left; min-width: 100px; border-right: 2px solid #cbd5e1; }
         .matrix-table td.matrix-team-col { position: sticky; left: 0; background: #fff; z-index: 1; text-align: left; font-weight: bold; color: #1e293b; border-right: 2px solid #cbd5e1; }
         
-        .symbol-game { display: inline-block; background: #fff7ed; color: #ea580c; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #fed7aa; }
-        .symbol-ref { display: inline-block; background: #eff6ff; color: #2563eb; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #bfdbfe; }
-        .symbol-both { display: inline-block; background: #f3e8ff; color: #9333ea; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e9d5ff; }
+        .symbol-game { display: inline-block; background: #fff7ed; color: var(--primary); font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .symbol-ref { display: inline-block; background: #eff6ff; color: #64748b; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .symbol-both { display: inline-block; background: #f3e8ff; color: var(--secondary); font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
         .matrix-legend { display: flex; gap: 12px; margin-top: 8px; font-size: 0.8rem; color: #64748b; justify-content: flex-end; }
         .legend-item { display: flex; align-items: center; gap: 6px; }
 
-        /* Empty State */
-        .empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; border: 2px dashed #e2e8f0; border-radius: 12px; background: #f8fafc; }
-        .hidden { display: none; }
-        .mt-4 { margin-top: 16px; } .mb-2 { margin-bottom: 8px; }
-        svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
-        .icon-sm { width: 14px; height: 14px; }
-
-        /* --- PRINT STYLES (Colorful & Stylish) --- */
+        /* --- PRINT STYLES (Fixed Line, Scaling) --- */
         @media print {
-            @page { margin: 10mm; size: portrait; }
+            @page { margin: 8mm; size: portrait; }
             
             body { 
                 background: white; padding: 0; width: 100%;
                 font-family: "Helvetica Neue", "Arial", sans-serif;
-                font-size: 8.5pt; 
+                font-size: 7.5pt;
                 -webkit-print-color-adjust: exact;
                 color: #111;
             }
@@ -269,31 +272,30 @@
             /* --- Stylish Header --- */
             .preview-header { 
                 margin-bottom: 8px; 
-                border-bottom: 4px solid #ea580c; /* Orange Accent */
+                border-bottom: 4px solid var(--primary);
                 padding-bottom: 6px;
                 display: flex; 
                 justify-content: space-between; 
                 align-items: flex-end;
             }
             .preview-header h1 { 
-                font-size: 2rem !important; 
+                font-size: 1.8rem !important; 
                 margin: 0; 
                 line-height: 1; 
                 font-weight: 900;
                 text-transform: uppercase;
                 letter-spacing: -0.5px;
-                color: #ea580c; /* Title Orange */
+                color: var(--primary);
                 font-style: italic;
-                text-shadow: 1px 1px 0 #ddd;
             }
             .preview-header div { 
-                font-size: 0.85rem !important; 
+                font-size: 0.8rem !important; 
                 font-weight: bold;
                 font-family: monospace;
                 display: flex;
-                gap: 12px !important; 
+                gap: 8px !important; 
                 background: #f1f5f9;
-                padding: 4px 10px;
+                padding: 4px 8px;
                 border-radius: 4px;
                 color: #334155;
             }
@@ -301,20 +303,22 @@
             /* --- Table Styles --- */
             .schedule-table, .matrix-table { 
                 width: 100%; 
-                margin-bottom: 8px; 
+                margin-bottom: 6px; 
                 border-collapse: collapse; 
-                border: 2px solid #334155; /* Dark Border */
+                border: 2px solid var(--secondary);
+                table-layout: fixed; /* Fixed Layout for reliable print widths */
             }
             
             /* Header Row */
             .schedule-table th, .matrix-table th { 
-                background-color: #1e293b !important; /* Navy Header */
+                background-color: var(--secondary) !important;
                 color: #fff !important; 
-                font-size: 0.8rem; 
+                font-size: 0.75rem; 
                 font-weight: 700;
-                border: 1px solid #334155 !important;
-                padding: 0 !important; 
+                border: 1px solid var(--secondary) !important;
+                padding: 1px !important; 
                 text-transform: uppercase;
+                overflow: hidden;
             }
             
             .schedule-table td, .matrix-table td {
@@ -322,21 +326,33 @@
                 padding: 0 !important;
             }
 
-            /* --- Header Grid Structure --- */
+            /* --- GRID LAYOUT UPDATE --- */
+            /* Columns: TeamArea(1fr) Ref(45px) TO(45px) */
             .header-inner {
                 display: grid;
-                grid-template-columns: 1fr 65px 65px; 
+                grid-template-columns: 1fr 45px 45px; 
                 width: 100%;
                 height: 100%;
                 margin: 0;
             }
+            .match-cell {
+                display: grid;
+                grid-template-columns: 1fr 45px 45px; 
+                border: none !important;
+                background: transparent;
+                border-radius: 0;
+                align-items: stretch;
+                min-height: 24px; 
+            }
+
             .header-part {
-                padding: 4px 2px;
+                padding: 2px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 height: 100%;
                 line-height: 1.1;
+                text-align: center;
             }
             .header-border-left { 
                 border-left: 1px solid #64748b !important; 
@@ -345,93 +361,106 @@
                 justify-content: center; 
             }
 
-            /* Match Cell */
-            .match-cell {
-                display: grid;
-                grid-template-columns: 1fr 65px 65px; 
-                border: none !important;
-                background: transparent;
-                border-radius: 0;
-                align-items: stretch;
-                min-height: 24px; 
-            }
+            /* Content Styling & Scaling Base */
             .cell-part {
-                padding: 3px 2px;
-                font-size: 0.85rem;
+                padding: 2px;
+                font-size: 0.8rem;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 border: none;
-                white-space: nowrap;
-                overflow: hidden;
+                white-space: nowrap !important; /* No Wrapping */
+                overflow: hidden !important; /* Clip for JS calculation */
+                text-align: center;
             }
             
-            /* Colored Sections in Cells */
             .part-teams { 
                 background: #fff7ed !important; 
                 justify-content: center !important;
-                gap: 6px;
+                gap: 4px;
                 font-weight: 800;
-                font-size: 0.95rem;
+                font-size: 0.9rem;
                 color: #000 !important;
+                
                 display: grid !important;
-                grid-template-columns: 1fr auto 1fr !important;
+                grid-template-columns: 1fr auto 1fr !important; /* Split space */
+                align-items: center;
                 padding: 0 4px !important;
             }
-            .part-teams > span:nth-child(1) { text-align: right; overflow: hidden; text-overflow: ellipsis; }
-            .part-teams > span:nth-child(3) { text-align: left; overflow: hidden; text-overflow: ellipsis; }
 
+            /* Team Name Spans */
+            .part-teams > span {
+                white-space: nowrap !important;
+                display: inline-block; /* Required for transform */
+                width: 100%;
+                overflow: visible; /* Let transform work without clipping inside the span */
+            }
+            /* Home Team: Align Right */
+            .part-teams > span:nth-child(1) { 
+                text-align: right; 
+                transform-origin: right center; /* Shrink towards center */
+            }
+            /* Away Team: Align Left */
+            .part-teams > span:nth-child(3) { 
+                text-align: left; 
+                transform-origin: left center; /* Shrink towards center */
+            }
+            
             /* Dividers */
-            .part-ref { border-left: 1px solid #94a3b8 !important; background: #fff !important; }
-            .part-both { border-left: 1px solid #94a3b8 !important; background: #fff !important; }
+            .part-ref, .part-both { 
+                border-left: 1px solid #94a3b8 !important; background: #fff !important; 
+                font-size: 0.7rem !important; 
+            }
             
             /* Padding for simple TDs */
             .schedule-table td:first-child, .schedule-table td:nth-child(2) {
-                padding: 2px 4px !important;
+                padding: 2px !important;
+                text-align: center;
             }
             .matrix-table td {
-                padding: 2px 4px !important;
+                padding: 2px !important;
             }
 
             /* VS Badge */
             .vs-badge {
-                font-size: 0.6rem;
+                font-size: 0.55rem;
                 font-weight: 900;
                 color: #fff !important;
-                background: #f97316 !important; 
+                background: var(--primary) !important; 
                 border-radius: 50%;
-                width: 16px; height: 16px;
+                width: 14px; height: 14px;
                 display: inline-flex; 
                 align-items: center; justify-content: center;
                 line-height: 1;
-                margin: 0 4px;
+                margin: 0 2px;
+                flex-shrink: 0;
             }
 
             /* --- Matrix Colorful Symbols --- */
             .matrix-container { margin-top: 5px !important; border: none !important; }
             
-            .symbol-game { background: #f97316 !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
-            .symbol-ref { background: #3b82f6 !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
-            .symbol-both { background: #a855f7 !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 6px; border-radius: 4px; }
+            .symbol-game { background: var(--primary) !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 4px; border-radius: 4px; }
+            .symbol-ref { background: #cbd5e1 !important; color: #334155 !important; border: none !important; font-weight: 800; padding: 1px 4px; border-radius: 4px; }
+            .symbol-both { background: var(--secondary) !important; color: #fff !important; border: none !important; font-weight: 800; padding: 1px 4px; border-radius: 4px; }
             
             h4 { 
-                margin: 8px 0 4px 0 !important; 
-                font-size: 0.95rem !important; 
+                margin: 6px 0 2px 0 !important; 
+                font-size: 0.9rem !important; 
                 font-weight: 900; 
                 text-transform: uppercase;
-                color: #1e293b !important;
-                border-left: 6px solid #f97316; 
-                padding-left: 8px;
+                color: var(--secondary) !important;
+                border-left: 5px solid var(--primary); 
+                padding-left: 6px;
             }
-            .matrix-legend { margin: 2px 0; font-size: 0.7rem; }
+            .matrix-legend { margin: 2px 0; font-size: 0.65rem; }
 
             .note-box {
                 display: block !important;
-                border: 2px solid #cbd5e1 !important;
+                border: 1px solid #cbd5e1 !important;
                 border-radius: 4px;
-                margin-top: 8px; padding: 6px;
-                font-size: 0.8rem;
-                min-height: 2em;
+                margin-top: 6px; padding: 4px;
+                font-size: 0.75rem;
+                min-height: 1.5em;
                 background: #f8fafc !important;
             }
             
@@ -457,9 +486,32 @@
 <div class="container main-content">
     <!-- Settings Panel -->
     <div class="settings-panel">
+        
+        <!-- Design Settings -->
         <div class="card">
             <div class="card-header">
-                <svg class="icon-orange" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+                <svg class="icon-primary" viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                デザイン設定
+                <button class="btn-reset" onclick="resetTheme()">元に戻す</button>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label>メインカラー</label>
+                    <input type="color" id="colorMain" value="#f97316" oninput="updateTheme()">
+                </div>
+                <div class="col">
+                    <label>ヘッダーカラー</label>
+                    <input type="color" id="colorSub" value="#1e293b" oninput="updateTheme()">
+                </div>
+            </div>
+            <div style="font-size:0.7rem; color:#64748b; margin-top:4px;">
+                ※印刷時のタイトルや表のヘッダー色に反映されます
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <svg class="icon-primary" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
                 大会・会場情報
             </div>
             <div class="row">
@@ -479,7 +531,7 @@
 
         <div class="card">
             <div class="card-header">
-                <svg class="icon-orange" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <svg class="icon-primary" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                 参加チーム (<span id="teamCount">0</span>)
             </div>
             <div id="teamsListContainer"></div>
@@ -490,7 +542,7 @@
 
         <div class="card">
             <div class="card-header">
-                <svg class="icon-orange" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <svg class="icon-primary" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 試合設定
             </div>
             <label>対戦方式</label>
@@ -596,6 +648,27 @@
     };
 
     els.eventDate.valueAsDate = new Date();
+
+    // Theme Logic
+    function updateTheme() {
+        const primary = document.getElementById('colorMain').value;
+        const secondary = document.getElementById('colorSub').value;
+        const root = document.documentElement;
+
+        root.style.setProperty('--primary', primary);
+        root.style.setProperty('--secondary', secondary);
+        root.style.setProperty('--primary-dark', adjustColor(primary, -30));
+    }
+
+    function resetTheme() {
+        document.getElementById('colorMain').value = '#f97316';
+        document.getElementById('colorSub').value = '#1e293b';
+        updateTheme();
+    }
+
+    function adjustColor(color, amount) {
+        return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+    }
 
     function resolveTeamName(id) {
         if (id === null || id === 0) return "ー";
@@ -708,43 +781,33 @@
             intervalVariance: Infinity
         };
 
-        const ATTEMPTS = 200; // 試行回数
+        const ATTEMPTS = 200; 
 
         for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
             const shuffledPool = [...allMatchesPool].sort(() => Math.random() - 0.5);
             const result = tryBuildSchedule(shuffledPool, courts, teams, startTimeStr, gameDuration, interval, slotMinutes, state.timeMode);
             
-            // 評価比較
-            // 優先順位 1: 連戦数 (少ない方が良い)
             if (result.metrics.doubleHeaders < bestMetrics.doubleHeaders) {
-                bestSchedule = result.schedule;
-                bestMetrics = result.metrics;
+                bestSchedule = result.schedule; bestMetrics = result.metrics;
             } else if (result.metrics.doubleHeaders === bestMetrics.doubleHeaders) {
-                // 優先順位 3: 少なくとも1回は2試合空きがあるか (「ない」チーム数が少ない方が良い)
                 if (result.metrics.teamsWithoutLongBreak < bestMetrics.teamsWithoutLongBreak) {
-                    bestSchedule = result.schedule;
-                    bestMetrics = result.metrics;
+                    bestSchedule = result.schedule; bestMetrics = result.metrics;
                 } else if (result.metrics.teamsWithoutLongBreak === bestMetrics.teamsWithoutLongBreak) {
-                    // 優先順位の補足: 試合間隔のばらつきが小さい方が公平
                     if (result.metrics.intervalVariance < bestMetrics.intervalVariance) {
-                        bestSchedule = result.schedule;
-                        bestMetrics = result.metrics;
+                        bestSchedule = result.schedule; bestMetrics = result.metrics;
                     }
                 }
             }
         }
 
-        // --- Phase 3: 審判割り当て (公平化・移動考慮) ---
+        // --- Phase 3: 審判割り当て ---
         const finalSchedule = assignOfficialsToSchedule(bestSchedule, teams, autoAssign);
-
-        // 集計
-        const matchCounts = {};
-        const refCounts = {};
-        const toCounts = {};
+        
+        // Stats
+        const matchCounts = {}; const refCounts = {}; const toCounts = {};
         teams.forEach(t => { matchCounts[t.id] = 0; refCounts[t.id] = 0; toCounts[t.id] = 0; });
         finalSchedule.forEach(m => { 
-            matchCounts[m.homeId]++; 
-            matchCounts[m.awayId]++; 
+            matchCounts[m.homeId]++; matchCounts[m.awayId]++; 
             if(m.refIds) m.refIds.forEach(rid => { if(rid && rid > 0) refCounts[rid]++; });
             if(m.toId && m.toId > 0) toCounts[m.toId]++;
         });
@@ -754,18 +817,13 @@
         renderSchedule(courts);
     }
 
-    // --- 内部関数: スケジュール構築試行 ---
     function tryBuildSchedule(pool, courts, teams, startTimeStr, gameDuration, interval, slotMinutes, timeMode) {
         const schedule = [];
         const poolCopy = [...pool];
         let currentTime = new Date(`2000-01-01T${startTimeStr}:00`);
-        
         let doubleHeadersCount = 0;
-        
-        // 各チームの試合スロット履歴
         const playedSlots = {}; 
         teams.forEach(t => playedSlots[t.id] = []);
-
         let currentSlotIndex = 0;
 
         while (poolCopy.length > 0) {
@@ -775,240 +833,105 @@
 
             for (let c = 0; c < courts; c++) {
                 if (poolCopy.length === 0) break;
-
-                // 候補を探す
-                // 優先度1: この時間枠で試合していない & 直前も試合していない (連戦なし)
-                // 優先度2: この時間枠で試合していない (連戦あり)
                 
                 let bestIdx = -1;
-                
-                // 1. 完全クリーンな候補を探す
                 for (let i = 0; i < poolCopy.length; i++) {
                     const m = poolCopy[i];
                     if (!slotBusyTeams.has(m.home.id) && !slotBusyTeams.has(m.away.id)) {
                         const homeLast = playedSlots[m.home.id].length > 0 ? playedSlots[m.home.id][playedSlots[m.home.id].length-1] : -10;
                         const awayLast = playedSlots[m.away.id].length > 0 ? playedSlots[m.away.id][playedSlots[m.away.id].length-1] : -10;
-                        
-                        if (homeLast !== currentSlotIndex - 1 && awayLast !== currentSlotIndex - 1) {
-                            bestIdx = i;
-                            break; 
-                        }
+                        if (homeLast !== currentSlotIndex - 1 && awayLast !== currentSlotIndex - 1) { bestIdx = i; break; }
                     }
                 }
-
-                // 2. なければ、やむを得ず連戦になる候補を探す
                 if (bestIdx === -1) {
                     for (let i = 0; i < poolCopy.length; i++) {
                         const m = poolCopy[i];
-                        if (!slotBusyTeams.has(m.home.id) && !slotBusyTeams.has(m.away.id)) {
-                            bestIdx = i;
-                            doubleHeadersCount++; 
-                            break;
-                        }
+                        if (!slotBusyTeams.has(m.home.id) && !slotBusyTeams.has(m.away.id)) { bestIdx = i; doubleHeadersCount++; break; }
                     }
                 }
 
                 if (bestIdx !== -1) {
                     const match = poolCopy.splice(bestIdx, 1)[0];
-                    slotMatches.push({
-                        ...match,
-                        court: c + 1,
-                        slotIndex: currentSlotIndex,
-                        homeId: match.home.id,
-                        awayId: match.away.id
-                    });
-                    slotBusyTeams.add(match.home.id);
-                    slotBusyTeams.add(match.away.id);
+                    slotMatches.push({ ...match, court: c + 1, slotIndex: currentSlotIndex, homeId: match.home.id, awayId: match.away.id });
+                    slotBusyTeams.add(match.home.id); slotBusyTeams.add(match.away.id);
                 }
             }
 
-            // コート調整 (1試合ならBコートへ移動...のような美的処理は一旦省略し、詰めて配置)
-            // もし美観重視ならここで slotMatches[0].court = 2 などを検討
-
             slotMatches.forEach(m => {
-                playedSlots[m.homeId].push(currentSlotIndex);
-                playedSlots[m.awayId].push(currentSlotIndex);
+                playedSlots[m.homeId].push(currentSlotIndex); playedSlots[m.awayId].push(currentSlotIndex);
                 schedule.push({ ...m, time: timeStr });
             });
-
             const addMinutes = timeMode === 'fixed' ? slotMinutes : (gameDuration + interval);
             currentTime.setMinutes(currentTime.getMinutes() + addMinutes);
             currentSlotIndex++;
         }
 
-        // --- メトリクス計算 ---
-        
-        // 1. 「2試合以上の空き」があるかチェック
-        // 差分が3以上 (例: スロット1で試合、次はスロット4以降) なら「2試合空き」達成
-        let teamsWithoutLongBreak = 0;
-        let intervalSum = 0;
-        let intervalCount = 0;
-        let intervals = [];
-
+        let teamsWithoutLongBreak = 0; let intervals = [];
         teams.forEach(t => {
             const slots = playedSlots[t.id];
             let hasLongBreak = false;
-            
-            if (slots.length < 2) {
-                // 試合数が少なすぎて休憩判定できない場合はOK扱いとするかNGとするか。
-                // ここでは「休憩が必要なほど試合していない」のでOK扱い(=Breakあり)とする
-                hasLongBreak = true; 
-            } else {
+            if (slots.length < 2) { hasLongBreak = true; } 
+            else {
                 for (let i = 0; i < slots.length - 1; i++) {
                     const diff = slots[i+1] - slots[i];
                     intervals.push(diff);
-                    if (diff >= 3) { // 差が3なら、間に2つスロットがある
-                        hasLongBreak = true;
-                    }
+                    if (diff >= 3) { hasLongBreak = true; }
                 }
             }
             if (!hasLongBreak) teamsWithoutLongBreak++;
         });
 
-        // 分散計算 (公平性)
         const mean = intervals.length > 0 ? intervals.reduce((a,b)=>a+b,0)/intervals.length : 0;
         const variance = intervals.length > 0 ? intervals.reduce((a,b)=>a + Math.pow(b-mean, 2), 0) / intervals.length : 0;
 
-        return { 
-            schedule, 
-            metrics: {
-                doubleHeaders: doubleHeadersCount,
-                teamsWithoutLongBreak: teamsWithoutLongBreak,
-                intervalVariance: variance
-            }
-        };
+        return { schedule, metrics: { doubleHeaders: doubleHeadersCount, teamsWithoutLongBreak: teamsWithoutLongBreak, intervalVariance: variance } };
     }
 
-    // --- 内部関数: 審判割り当て (優先順位 2: 完全平均化 & 4: 移動考慮) ---
     function assignOfficialsToSchedule(schedule, teams, autoAssign) {
-        if (!autoAssign) {
-            return schedule.map(m => ({ ...m, refIds: [null, null], toId: null }));
-        }
-
-        const dutyCounts = {}; // Ref + TO count (参考用)
-        const refCounts = {};  // 審判回数 (最重要)
-        const toCounts = {};   // TO回数
-        
-        teams.forEach(t => { 
-            dutyCounts[t.id] = 0; 
-            refCounts[t.id] = 0; 
-            toCounts[t.id] = 0; 
-        });
-
-        // スケジュールを時間枠ごとにグループ化
+        if (!autoAssign) return schedule.map(m => ({ ...m, refIds: [null, null], toId: null }));
+        const refCounts = {}; const toCounts = {};
+        teams.forEach(t => { refCounts[t.id] = 0; toCounts[t.id] = 0; });
         const slotsMap = {};
-        schedule.forEach(m => {
-            if (!slotsMap[m.slotIndex]) slotsMap[m.slotIndex] = [];
-            slotsMap[m.slotIndex].push(m);
-        });
-
+        schedule.forEach(m => { if (!slotsMap[m.slotIndex]) slotsMap[m.slotIndex] = []; slotsMap[m.slotIndex].push(m); });
         const sortedSlots = Object.keys(slotsMap).sort((a,b) => parseInt(a) - parseInt(b));
         const enrichedMatches = [];
 
         sortedSlots.forEach(slotKey => {
-            const slotIndex = parseInt(slotKey);
-            const currentMatches = slotsMap[slotKey];
-            
-            // この時間帯に試合があるチーム (割り当て不可)
+            const slotIndex = parseInt(slotKey); const currentMatches = slotsMap[slotKey];
             const playingTeamIds = new Set();
             currentMatches.forEach(m => { playingTeamIds.add(m.homeId); playingTeamIds.add(m.awayId); });
-
-            // この時間帯ですでに審判に割り当てられたチーム
             const assignedInSlot = new Set();
-
-            // 試合ごとに割り当て
             currentMatches.forEach(match => {
-                // 候補チーム抽出
-                let candidates = teams.filter(t => 
-                    !playingTeamIds.has(t.id) && !assignedInSlot.has(t.id)
-                );
-
-                if (candidates.length < 1) {
-                    enrichedMatches.push({ ...match, refIds: [-1, -1], toId: -1 });
-                    return;
-                }
-
-                // スコアリングとソート
-                // 優先順位:
-                // 1. 審判回数 (少ない方が絶対)
-                // 2. 移動負担 (同じコートでの接続が良い方が良い)
-                // 3. TO回数 (少ない方が良い)
-
+                let candidates = teams.filter(t => !playingTeamIds.has(t.id) && !assignedInSlot.has(t.id));
+                if (candidates.length < 1) { enrichedMatches.push({ ...match, refIds: [-1, -1], toId: -1 }); return; }
                 const scoredCandidates = candidates.map(team => {
                     let moveScore = 0;
-
-                    // 移動負担の評価
                     const prevSlotMatches = slotsMap[slotIndex - 1] || [];
                     const nextSlotMatches = slotsMap[slotIndex + 1] || [];
-
-                    // 直前・直後の状況チェック
                     const playedPrevHere = prevSlotMatches.some(m => m.court === match.court && (m.homeId === team.id || m.awayId === team.id));
                     const willPlayNextHere = nextSlotMatches.some(m => m.court === match.court && (m.homeId === team.id || m.awayId === team.id));
-                    
-                    // 移動なし（同じコートで連続）なら加点
-                    if (playedPrevHere) moveScore += 1;
-                    if (willPlayNextHere) moveScore += 1;
-                    
-                    // 違うコートなら微減点（移動の手間）
-                    // ここは「平均化」を阻害しない範囲で、同回数の時の決定打にする
-                    
+                    if (playedPrevHere) moveScore += 1; if (willPlayNextHere) moveScore += 1;
                     return { team, moveScore };
                 });
-
                 scoredCandidates.sort((a, b) => {
-                    // 1. 審判回数 (昇順) - 絶対優先
                     const refDiff = refCounts[a.team.id] - refCounts[b.team.id];
                     if (refDiff !== 0) return refDiff;
-
-                    // 2. 移動スコア (降順) - 回数が同じなら移動が楽な方を選ぶ
                     const moveDiff = b.moveScore - a.moveScore;
                     if (moveDiff !== 0) return moveDiff;
-
-                    // 3. TO回数 (昇順) - それも同じならTOが少ない方
                     return toCounts[a.team.id] - toCounts[b.team.id];
                 });
-
-                // 上位2チームを選出
-                let assignedTeams = [];
-                if (scoredCandidates.length >= 2) {
-                    assignedTeams = [scoredCandidates[0].team, scoredCandidates[1].team];
-                } else {
-                    assignedTeams = [scoredCandidates[0].team];
-                }
-
-                // 記録更新
-                assignedTeams.forEach(t => {
-                    assignedInSlot.add(t.id);
-                    refCounts[t.id]++;
-                    dutyCounts[t.id]++;
-                });
-
-                // TO割り当て (2チームのうちTO回数が少ない方)
-                let t1 = assignedTeams[0];
-                let t2 = assignedTeams[1];
-                let toId = null;
-
+                let assignedTeams = (scoredCandidates.length >= 2) ? [scoredCandidates[0].team, scoredCandidates[1].team] : [scoredCandidates[0].team];
+                assignedTeams.forEach(t => { assignedInSlot.add(t.id); refCounts[t.id]++; });
+                let t1 = assignedTeams[0]; let t2 = assignedTeams[1]; let toId = null;
                 if (t2) {
-                    if (toCounts[t1.id] <= toCounts[t2.id]) {
-                        toId = t1.id;
-                        toCounts[t1.id]++;
-                        dutyCounts[t1.id]++;
-                    } else {
-                        toId = t2.id;
-                        toCounts[t2.id]++;
-                        dutyCounts[t2.id]++;
-                    }
+                    if (toCounts[t1.id] <= toCounts[t2.id]) { toId = t1.id; toCounts[t1.id]++; } else { toId = t2.id; toCounts[t2.id]++; }
                     enrichedMatches.push({ ...match, refIds: [t1.id, t2.id], toId: toId });
                 } else {
-                    // 1チームのみ
-                    toId = t1.id;
-                    toCounts[t1.id]++;
-                    dutyCounts[t1.id]++;
+                    toId = t1.id; toCounts[t1.id]++;
                     enrichedMatches.push({ ...match, refIds: [t1.id, -1], toId: toId });
                 }
             });
         });
-
         return enrichedMatches.sort((a, b) => {
             if (a.slotIndex !== b.slotIndex) return a.slotIndex - b.slotIndex;
             return a.court - b.court;
@@ -1018,7 +941,6 @@
     function renderSchedule(courts) {
         els.emptyState.classList.add('hidden');
         els.scheduleResult.classList.remove('hidden');
-        
         let style = document.getElementById('dynamic-page-size');
         if (!style) { style = document.createElement('style'); style.id = 'dynamic-page-size'; document.head.appendChild(style); }
         style.innerHTML = `@media print { @page { size: portrait; } }`; 
@@ -1030,8 +952,8 @@
         document.getElementById('printOpenTime').textContent = '⏰ ' + document.getElementById('eventOpenTime').value + " 開場";
 
         const notes = document.getElementById('eventNotes').value;
-        document.getElementById('printNotesContainer').classList.remove('hidden');
-        document.getElementById('printNotesContent').textContent = notes;
+        if(notes) { document.getElementById('printNotesContainer').classList.remove('hidden'); document.getElementById('printNotesContent').textContent = notes; } 
+        else { document.getElementById('printNotesContainer').classList.add('hidden'); }
 
         const timeSlots = {};
         state.schedule.forEach(match => {
@@ -1039,102 +961,44 @@
             timeSlots[match.time].push(match);
         });
 
-        // Header
         let theadHtml = `<tr><th style="width:30px">No.</th><th style="width:50px">時間</th>`;
         for (let c = 1; c <= courts; c++) {
             const courtName = courts > 1 ? `コート${String.fromCharCode(64 + c)}` : '試合内容';
-            theadHtml += `<th>
-                <div class="header-inner">
-                    <div class="header-part header-title-box">
-                        <span class="court-label">${courtName}</span>
-                        <span class="court-sub">組み合わせ</span>
-                    </div>
-                    <div class="header-part header-border-left">審</div>
-                    <div class="header-part header-border-left" style="font-size:0.75rem; letter-spacing:-1px;">審+TO</div>
-                </div>
-            </th>`;
+            theadHtml += `<th><div class="header-inner"><div class="header-part header-title-box"><span class="court-label">${courtName}</span><span class="court-sub">組み合わせ</span></div><div class="header-part header-border-left">審</div><div class="header-part header-border-left" style="font-size:0.75rem; letter-spacing:-1px;">審+TO</div></div></th>`;
         }
         theadHtml += `</tr>`;
         els.scheduleHead.innerHTML = theadHtml;
 
         els.scheduleBody.innerHTML = '';
         let slotIndex = 1;
-
         for (const [time, matches] of Object.entries(timeSlots)) {
             const tr = document.createElement('tr');
-            tr.innerHTML += `<td class="text-center" style="font-family:monospace;">${slotIndex}</td>`;
-            tr.innerHTML += `<td style="font-weight:bold;">${time}</td>`;
-
+            tr.innerHTML += `<td class="text-center" style="font-family:monospace;">${slotIndex}</td><td style="font-weight:bold;">${time}</td>`;
             for (let c = 1; c <= courts; c++) {
                 const match = matches.find(m => m.court === c);
                 if (match) {
-                    
-                    const homeName = resolveTeamName(match.homeId);
-                    const awayName = resolveTeamName(match.awayId);
-                    const r1Name = resolveTeamName(match.refIds[0]);
-                    const r2Name = resolveTeamName(match.refIds[1]);
-                    const toName = resolveTeamName(match.toId);
-
-                    let refOnly = "";
-                    let refTo = "";
-                    
+                    const homeName = resolveTeamName(match.homeId); const awayName = resolveTeamName(match.awayId);
+                    const r1Name = resolveTeamName(match.refIds[0]); const r2Name = resolveTeamName(match.refIds[1]); const toName = resolveTeamName(match.toId);
+                    let refOnly = ""; let refTo = "";
                     if (match.refIds.length >= 2) {
-                        const r1Id = match.refIds[0];
-                        const r2Id = match.refIds[1];
-                        
-                        // どちらがTO兼任か判定して表示
-                        if (r1Id !== null && r1Id !== -1 && r1Id === match.toId) {
-                            refTo = r1Name; refOnly = r2Name;
-                        } else if (r2Id !== null && r2Id !== -1 && r2Id === match.toId) {
-                            refTo = r2Name; refOnly = r1Name;
-                        } else {
-                            // 通常ここには来ないが念のため
-                            refOnly = [r1Name, r2Name].filter(n => n !== "ー").join(",");
-                            refTo = toName + (match.toId !== null && match.toId !== -1 ? "(TOのみ)" : "");
-                        }
-                        
-                        if(match.toId === -1) refTo = "要調整";
-                        if(match.toId === null) refTo = "ー";
+                        const r1Id = match.refIds[0]; const r2Id = match.refIds[1];
+                        if (r1Id !== null && r1Id !== -1 && r1Id === match.toId) { refTo = r1Name; refOnly = r2Name; } 
+                        else if (r2Id !== null && r2Id !== -1 && r2Id === match.toId) { refTo = r2Name; refOnly = r1Name; } 
+                        else { refOnly = [r1Name, r2Name].filter(n => n !== "ー").join(","); refTo = toName + (match.toId !== null && match.toId !== -1 ? "(TOのみ)" : ""); }
+                        if(match.toId === -1) refTo = "要調整"; if(match.toId === null) refTo = "ー";
+                    } else if (match.refIds.length === 2 && match.refIds[1] === -1) { refTo = r1Name; refOnly = "ー"; } else { refOnly = "ー"; refTo = "ー"; }
 
-                    } else if (match.refIds.length === 2 && match.refIds[1] === -1) {
-                         // 1チームしかいない場合
-                         refTo = r1Name;
-                         refOnly = "ー";
-                    } else {
-                        refOnly = "ー"; refTo = "ー";
-                    }
-
-                    tr.innerHTML += `
-                        <td>
-                            <div class="match-cell">
-                                <div class="cell-part part-teams">
-                                    <span>${homeName}</span>
-                                    <span class="vs-badge">vs</span>
-                                    <span>${awayName}</span>
-                                </div>
-                                <div class="cell-part part-ref">
-                                    <span>${refOnly}</span>
-                                </div>
-                                <div class="cell-part part-both">
-                                    <span>${refTo}</span>
-                                </div>
-                            </div>
-                        </td>
-                    `;
-                } else {
-                    tr.innerHTML += `<td style="background:#f8fafc;"></td>`;
-                }
+                    tr.innerHTML += `<td><div class="match-cell"><div class="cell-part part-teams"><span>${homeName}</span><span class="vs-badge">vs</span><span>${awayName}</span></div><div class="cell-part part-ref"><span>${refOnly}</span></div><div class="cell-part part-both"><span>${refTo}</span></div></div></td>`;
+                } else { tr.innerHTML += `<td style="background:#f8fafc;"></td>`; }
             }
             els.scheduleBody.appendChild(tr);
             slotIndex++;
         }
 
-        // Matrix
         const times = Object.keys(timeSlots);
         let matrixHtml = `<table class="matrix-table"><thead><tr><th class="matrix-team-col">チーム</th>`;
         times.forEach((t, i) => { matrixHtml += `<th>${i + 1}</th>`; });
         matrixHtml += `</tr></thead><tbody>`;
-
         state.teams.forEach(team => {
             matrixHtml += `<tr><td class="matrix-team-col">${team.name}</td>`;
             times.forEach(time => {
@@ -1142,10 +1006,7 @@
                 const slotMatches = timeSlots[time] || [];
                 for (const m of slotMatches) {
                     if (m.homeId === team.id || m.awayId === team.id) { symbol = "G"; className = "symbol-game"; break; }
-                    
-                    let isRef = m.refIds && m.refIds.includes(team.id); 
-                    let isTo = m.toId === team.id;
-                    
+                    let isRef = m.refIds && m.refIds.includes(team.id); let isTo = m.toId === team.id;
                     if (isRef && isTo) { symbol = "★"; className = "symbol-both"; break; }
                     else if (isRef) { symbol = "R"; className = "symbol-ref"; }
                     else if (isTo) { symbol = "TO"; className = "symbol-ref"; }
@@ -1157,13 +1018,9 @@
         matrixHtml += `</tbody></table>`;
         els.teamDutyMatrix.innerHTML = matrixHtml;
 
-        // Opponents
         const opponentsMap = {};
         state.teams.forEach(t => opponentsMap[t.id] = []);
-        state.schedule.forEach(m => { 
-            if (opponentsMap[m.homeId]) opponentsMap[m.homeId].push(resolveTeamName(m.awayId)); 
-            if (opponentsMap[m.awayId]) opponentsMap[m.awayId].push(resolveTeamName(m.homeId)); 
-        });
+        state.schedule.forEach(m => { if (opponentsMap[m.homeId]) opponentsMap[m.homeId].push(resolveTeamName(m.awayId)); if (opponentsMap[m.awayId]) opponentsMap[m.awayId].push(resolveTeamName(m.homeId)); });
         let opponentHtml = `<table class="matrix-table"><thead><tr><th class="matrix-team-col" style="width:150px;">チーム</th><th>対戦相手 (試合順)</th></tr></thead><tbody>`;
         state.teams.forEach(t => {
             const oppsStr = opponentsMap[t.id].length > 0 ? opponentsMap[t.id].join(' ▶ ') : 'なし';
@@ -1172,7 +1029,6 @@
         opponentHtml += `</tbody></table>`;
         document.getElementById('teamOpponentList').innerHTML = opponentHtml;
 
-        // Stats Footer
         const statsContainer = document.getElementById('assignmentStats');
         statsContainer.innerHTML = '';
         state.teams.forEach(t => {
@@ -1181,9 +1037,43 @@
             div.innerHTML = `<div>${t.name}</div><div style="font-size:0.75rem;">試:${state.stats.matchCounts[t.id]} 審:${state.stats.refCounts[t.id]} TO:${state.stats.toCounts[t.id]}</div>`;
             statsContainer.appendChild(div);
         });
+
+        // Trigger text adjustment
+        setTimeout(adjustScheduleText, 50);
     }
 
+    // --- Text Auto-Scaling Logic ---
+    function adjustScheduleText() {
+        const teamSpans = document.querySelectorAll('.part-teams > span');
+        teamSpans.forEach(span => {
+            // Reset to measure natural width
+            span.style.transform = 'none';
+            span.style.width = 'auto'; 
+            
+            // Check overflow
+            const parentWidth = span.parentElement.clientWidth;
+            // Assuming grid 1fr auto 1fr, approx parent / 2 minus badge
+            // Better to just measure the span vs its container constraint
+            // But span is inline-block 100% width.
+            
+            // Re-apply width constraint to measure overflow
+            span.style.width = '100%';
+            
+            const scrollW = span.scrollWidth;
+            const clientW = span.clientWidth;
+            
+            if (scrollW > clientW && clientW > 0) {
+                const scale = (clientW / scrollW) * 0.95; // 0.95 for safety padding
+                span.style.transform = `scaleX(${scale})`;
+            }
+        });
+    }
+
+    window.addEventListener('resize', adjustScheduleText);
+    window.onbeforeprint = adjustScheduleText;
+    
     renderTeams();
 </script>
 </body>
 </html>
+
